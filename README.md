@@ -94,3 +94,49 @@ especially if other workloads share your Minikube cluster.
 - Define CPU and memory requests and limits.
 - Add ConfigMaps and Secrets.
 - Automate deployment with a Jenkins pipeline.
+
+## Architecture Diagram
+
+This diagram represents the Kubernetes resources running in the
+Minikube learning environment. The NodePort value shown is the
+value observed during this run and may change if the Service
+is recreated.
+
+```mermaid
+flowchart TD
+    User[Browser or user]
+    NodePort[Minikube NodePort<br/>Port 30667 in captured run]
+    Service[Kubernetes Service<br/>hello-nginx<br/>Port 80]
+    Deployment[Deployment<br/>hello-nginx<br/>1 replica]
+    Pod[Nginx Pod<br/>nginx:stable<br/>Container port 80]
+
+    User --> NodePort
+    NodePort --> Service
+    Deployment -. manages .-> Pod
+    Service --> Pod
+```
+
+## Deployment Evidence
+
+![Minikube deployment and Service status](docs/images/kubernetes-minikube-status.png)
+
+The screenshot records the observed Minikube cluster status and
+the running hello-nginx Deployment, Pod, and NodePort Service.
+
+## Validation and Runtime Checks
+
+List the Kubernetes resources:
+
+    minikube kubectl -- get deployments,pods,services
+
+Inspect the Deployment:
+
+    minikube kubectl -- describe deployment hello-nginx
+
+Inspect the Service:
+
+    minikube kubectl -- describe service hello-nginx
+
+The screenshot records the actual state observed during the
+captured session. Resource names, IP addresses, and allocated
+NodePort values may differ in future runs.
