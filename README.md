@@ -140,3 +140,48 @@ Inspect the Service:
 The screenshot records the actual state observed during the
 captured session. Resource names, IP addresses, and allocated
 NodePort values may differ in future runs.
+
+## Architecture Diagram
+
+This diagram represents the Kubernetes resources observed in the
+Minikube learning environment. NodePort 30667 was the value observed
+during the captured run; it may change if the Service is recreated.
+
+```mermaid
+flowchart TD
+    User[Browser or user]
+    NodePort[Minikube NodePort<br/>Port 30667 in captured run]
+    Service[Kubernetes Service<br/>hello-nginx<br/>Port 80]
+    Deployment[Deployment<br/>hello-nginx<br/>1 replica]
+    Pod[Nginx Pod<br/>nginx:stable<br/>Container port 80]
+
+    User --> NodePort
+    NodePort --> Service
+    Service --> Pod
+    Deployment -. manages .-> Pod
+```
+
+## Deployment Evidence
+
+![Minikube deployment and Service status](docs/images/kubernetes-minikube-status.png)
+
+This screenshot records the observed Minikube cluster status and
+the running hello-nginx Deployment, Pod, and NodePort Service.
+
+## Runtime Verification
+
+List the Kubernetes resources:
+
+    minikube kubectl -- get deployments,pods,services
+
+Inspect the Deployment:
+
+    minikube kubectl -- describe deployment hello-nginx
+
+Inspect the Service:
+
+    minikube kubectl -- describe service hello-nginx
+
+The screenshot reflects the state observed during the captured
+session. Resource names, IP addresses, and NodePort values may differ
+in subsequent runs.
