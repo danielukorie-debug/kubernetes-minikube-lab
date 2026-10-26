@@ -172,4 +172,8 @@ flowchart TD
     Pod --> Response
 ```
 
-The port-forward exists only while its command is running. Stop it with Ctrl+C when the test is complete. The existing deployment screenshot documents resource status. A separate terminal screenshot can provide visual evidence of the HTTP response.
+The port-forward exists only while its command is running. Stop it with Ctrl+C when the test is complete. The existing deployment screenshot documents resource status.
+
+![Nginx HTTP 200 response](docs/images/kubernetes-http-200.png)
+
+This terminal screenshot records the successful HTTP response observed during the test session.
