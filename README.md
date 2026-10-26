@@ -124,3 +124,52 @@ This screenshot records the observed Minikube status and the running hello-nginx
 Inspect resources with `minikube kubectl -- get deployments,pods,services`. Use `minikube kubectl -- describe deployment hello-nginx` to inspect the Deployment and `minikube kubectl -- describe service hello-nginx` to inspect the Service.
 
 The screenshot reflects the state observed during the captured session. Resource names, IP addresses, and NodePort values may differ in later runs.
+
+## HTTP Runtime Verification
+
+The application was tested through a temporary local port-forward. The command `kubectl port-forward service/hello-nginx 18080:80` selects a Pod backing the Service and forwards local TCP port 18080 to port 80 on that Pod. This confirms an HTTP response through the forwarded Pod connection. It does not verify the NodePort path, normal Service networking, public internet reachability, or production readiness.
+
+Start port forwarding in one terminal:
+
+```bash
+kubectl port-forward service/hello-nginx 18080:80
+```
+
+Keep that terminal open. In a second terminal, run:
+
+```bash
+curl --max-time 10 -I http://127.0.0.1:18080/
+```
+
+### Observed Result
+
+During the recorded test, this command returned an HTTP success response with these headers:
+
+```text
+HTTP/1.1 200 OK
+Server: nginx/1.31.8
+Content-Type: text/html
+Content-Length: 896
+```
+
+The response confirms that the application returned an HTTP response during that test session. Headers and content may change if the image or configuration changes.
+
+### Request Flow
+
+```mermaid
+flowchart TD
+    Client[Local curl request]
+    LocalPort[127.0.0.1:18080]
+    Forward[kubectl port-forward]
+    Service[hello-nginx Service selects Pod]
+    Pod[Selected Nginx Pod port 80]
+    Response[HTTP 200 OK]
+
+    Client --> LocalPort
+    LocalPort --> Forward
+    Forward --> Pod
+    Service -. selects target .-> Pod
+    Pod --> Response
+```
+
+The port-forward exists only while its command is running. Stop it with Ctrl+C when the test is complete. The existing deployment screenshot documents resource status. A separate terminal screenshot can provide visual evidence of the HTTP response.
